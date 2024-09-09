@@ -9,7 +9,6 @@ pipeline {
 
     stage('Build') {
       steps {
-        echo 'echo $PATH'
         sh '''mvn clean package
 '''
       }
