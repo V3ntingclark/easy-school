@@ -1,6 +1,7 @@
 pipeline {
-    agent {
-        docker { image 'maven:3.8.6-jdk-11' } // Maven runs inside the Docker container
+    agent any
+    tools {
+        maven 'mvn-manual' // The name you gave Maven in Global Tool Configuration
     }
     stages {
         stage('Checkout') {
@@ -11,13 +12,12 @@ pipeline {
 
         stage('Build') {
             steps {
-                sh 'mvn clean package' // This runs Maven inside the container
+                sh 'mvn clean package'
             }
         }
 
         stage('SBOM (Syft)') {
             steps {
-                // Run Syft directly on the host's Docker daemon (via the mounted socket)
                 sh 'docker run --rm -v ${WORKSPACE}:/project anchore/syft:latest /project -o cyclonedx-json > sbom.json'
             }
         }
