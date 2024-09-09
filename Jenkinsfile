@@ -3,7 +3,7 @@ pipeline {
   stages {
     stage('Checkout') {
       steps {
-        git(url: 'https://github.com/V3ntingclark/easy-school', credentialsId: 'G1')
+        git(url: 'https://davidclark15323@gmail:Redditgold#1@github.com/V3ntingclark/easy-school', credentialsId: 'G1')
       }
     }
 
