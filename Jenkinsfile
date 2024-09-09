@@ -3,7 +3,7 @@ pipeline {
   stages {
     stage('Checkout') {
       steps {
-        git(url: 'https://gitlab.com/YOUR-USERNAME/YOUR-REPO.git', branch: 'main', credentialsId: 'g1')
+        git(url: 'https://github.com/V3ntingclark/easy-school', branch: 'main', credentialsId: 'g1')
       }
     }
 
