@@ -1,9 +1,16 @@
 pipeline {
   agent any
+  tools {
+    maven 'mvn' // Ensure 'mvn' is configured in Jenkins Global Tool Configuration
+  }
   stages {
     stage('Checkout') {
       steps {
-        git(url: 'https://davidclark15323@gmail:Redditgold#1@github.com/V3ntingclark/easy-school.git')
+        // Using Jenkins credentials for secure GitHub access
+        git(
+          url: 'https://github.com/V3ntingclark/easy-school.git',
+          credentialsId: 'G1'
+        )
       }
     }
 
@@ -15,12 +22,8 @@ pipeline {
 
     stage('SBOM (Syft)') {
       steps {
-        sh 'docker run --rm -v $(pwd):/project anchore/syft:latest /project -o cyclonedx-json > sbom.json'
+        sh 'docker run --rm -v ${WORKSPACE}:/project anchore/syft:latest /project -o cyclonedx-json > sbom.json'
       }
     }
-
-  }
-  tools {
-    maven 'mvn'
   }
 }
