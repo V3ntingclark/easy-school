@@ -1,26 +1,27 @@
 pipeline {
-  agent any
-  stages {
-    stage('Checkout') {
-      steps {
-        git(url: 'https://github.com/V3ntingclark/easy-school.git', credentialsId: 'G1')
-      }
+    agent any
+    tools {
+        maven 'mvn-manual' // Ensure 'mvn-manual' matches the name in your Global Tool Configuration
     }
+    stages {
+        stage('Checkout') {
+            steps {
+                git(url: 'https://github.com/V3ntingclark/easy-school.git', credentialsId: 'G1')
+            }
+        }
 
-    stage('Build') {
-      steps {
-        sh 'mvn clean package'
-      }
+        stage('Build') {
+            steps {
+                // Use the Maven tool configured in the Global Tool Configuration
+                sh 'mvn clean package'
+            }
+        }
+
+        stage('SBOM (Syft)') {
+            steps {
+                // Use Jenkins environment variable for the workspace instead of $(pwd)
+                sh 'docker run --rm -v ${WORKSPACE}:/project anchore/syft:latest /project -o cyclonedx-json > sbom.json'
+            }
+        }
     }
-
-    stage('SBOM (Syft)') {
-      steps {
-        sh 'docker run --rm -v $(pwd):/project anchore/syft:latest /project -o cyclonedx-json > sbom.json'
-      }
-    }
-
-  }
-  tools {
-    maven 'mvn'
-  }
 }
