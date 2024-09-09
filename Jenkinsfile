@@ -11,6 +11,7 @@ pipeline {
       steps {
         sh '''mvn clean package
 '''
+        tool 'mvn'
       }
     }
 
