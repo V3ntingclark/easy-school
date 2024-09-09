@@ -1,24 +1,31 @@
 pipeline {
     agent any
-    tools {
-        maven 'mvn-host' // Use the name you configured in Jenkins Global Tool Configuration
-    }
+    
     stages {
         stage('Checkout') {
             steps {
-                git(url: 'https://github.com/V3ntingclark/easy-school.git', credentialsId: 'G1')
+                git url: 'https://github.com/V3ntingclark/easy-school.git', branch: 'master'
             }
         }
-
-        stage('Build') {
+        
+        stage('Set Up Python') {
             steps {
-                sh 'mvn clean package' // Now uses Maven from the EC2 host
+                // Install Python dependencies
+                sh '''
+                python3 -m venv venv  # Create virtual environment
+                source venv/bin/activate  # Activate the virtual environment
+                pip install -r requirements.txt  # Install dependencies
+                '''
             }
         }
-
-        stage('SBOM (Syft)') {
+        
+        stage('Run App') {
             steps {
-                sh 'docker run --rm -v ${WORKSPACE}:/project anchore/syft:latest /project -o cyclonedx-json > sbom.json'
+                // Run the Python app
+                sh '''
+                source venv/bin/activate  # Activate the virtual environment
+                python3 app.py  # Run the Python app
+                '''
             }
         }
     }
