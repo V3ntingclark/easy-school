@@ -57,7 +57,7 @@ pipeline {
   environment {
     SONAR_SERVER = 'MySonarQube'
     SONAR_PROJECT_KEY = 'cmu-capstone'
-    SONAR_SCANNER_HOME = 'SonarQubeScanner' // This references the SonarQube Scanner tool in Jenkins
+    SONAR_SCANNER_HOME = 'SonarQubeScanner'
   }
   post {
     always {
