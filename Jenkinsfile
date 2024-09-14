@@ -9,13 +9,10 @@ pipeline {
 
     stage('Set Up Python') {
       steps {
-        sh '''
-sh \'\'\'                
+        sh '''               
 python3 -m venv venv  # Create virtual environment
                 source venv/bin/activate  # Activate the virtual environment
-                pip install -r requirements.txt  # Install dependencies
-\'\'\'
-                '''
+                pip install -r requirements.txt  # Install dependencies                '''
       }
     }
 
