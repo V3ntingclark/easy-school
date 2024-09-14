@@ -10,8 +10,9 @@ pipeline {
     stage('Set Up Python') {
       steps {
         sh '''
+          #!/bin/bash
           python3 -m venv venv  # Create virtual environment
-          . venv/bin/activate  # Activate the virtual environment
+          source venv/bin/activate  # Activate the virtual environment
           pip install -r requirements.txt  # Install dependencies
         '''
       }
@@ -21,6 +22,7 @@ pipeline {
       steps {
         withSonarQubeEnv('MySonarQube') {
           sh '''
+            #!/bin/bash
             ${SONAR_SCANNER_HOME}/bin/sonar-scanner \
               -Dsonar.projectKey=${SONAR_PROJECT_KEY} \
               -Dsonar.sources=. \
@@ -33,7 +35,8 @@ pipeline {
     stage('Run App') {
       steps {
         sh '''
-          . venv/bin/activate  # Activate the virtual environment
+          #!/bin/bash
+          source venv/bin/activate  # Activate the virtual environment
           python3 app.py  # Run the Python app
         '''
       }
@@ -42,6 +45,7 @@ pipeline {
     stage('SBOM with Syft') {
       steps {
         sh '''
+          #!/bin/bash
           docker run --rm -v $(pwd):/project anchore/syft:latest /project -o cyclonedx-json > sbom.json
         '''
       }
@@ -50,6 +54,7 @@ pipeline {
     stage('Vulnerability Scan with Grype') {
       steps {
         sh '''
+          #!/bin/bash
           docker run --rm -v $(pwd):/project anchore/grype:latest sbom:/project/sbom.json
         '''
       }
