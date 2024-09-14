@@ -23,12 +23,10 @@ pipeline {
         withSonarQubeEnv('MySonarQube') {
           sh '''
             #!/bin/bash
-            ${SONAR_SCANNER_HOME}/bin/sonar-scanner \
-              -Dsonar.projectKey=${SONAR_PROJECT_KEY} \
-              -Dsonar.sources=. \
-              -Dsonar.python.version=3.x
+            ${SONAR_SCANNER_HOME}/bin/sonar-scanner               -Dsonar.projectKey=${SONAR_PROJECT_KEY}               -Dsonar.sources=.               -Dsonar.python.version=3.x
           '''
         }
+
       }
     }
 
@@ -59,6 +57,7 @@ pipeline {
         '''
       }
     }
+
   }
   environment {
     SONAR_SERVER = 'MySonarQube'
@@ -69,5 +68,6 @@ pipeline {
     always {
       archiveArtifacts(artifacts: 'sbom.json', allowEmptyArchive: true)
     }
+
   }
 }
