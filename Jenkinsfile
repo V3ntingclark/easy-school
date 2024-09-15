@@ -21,11 +21,14 @@ pipeline {
     stage('SonarQube Analysis') {
       steps {
         withSonarQubeEnv('MySonarQube') {
-          sh '''
-            #!/bin/bash
-            ${SONAR_SCANNER_HOME}~/.bashrc
-               -Dsonar.projectKey=${SONAR_PROJECT_KEY}               -Dsonar.sources=.               -Dsonar.python.version=3.x
-          '''
+          sh '''#!/bin/bash
+
+# Correct path to SonarQube scanner executable
+${SONAR_SCANNER_HOME}/bin/sonar-scanner \\
+  -Dsonar.projectKey=${SONAR_PROJECT_KEY} \\
+  -Dsonar.sources=. \\
+  -Dsonar.python.version=3.x
+'''
         }
 
       }
