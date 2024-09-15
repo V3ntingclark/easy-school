@@ -24,7 +24,7 @@ pipeline {
           sh '''#!/bin/bash
 
 # Correct path to SonarQube scanner executable
-${SONAR_SCANNER_HOME}/bin/sonar-scanner \\
+${SONAR_SCANNER_HOME}/var/jenkins_home/tools/hudson.plugins.sonar.SonarRunnerInstallation/SonarQubeScanner/
   -Dsonar.projectKey=${SONAR_PROJECT_KEY} \\
   -Dsonar.sources=. \\
   -Dsonar.python.version=3.x
