@@ -23,7 +23,8 @@ pipeline {
         withSonarQubeEnv('MySonarQube') {
           sh '''
             #!/bin/bash
-            ${SONAR_SCANNER_HOME}/bin/sonar-scanner               -Dsonar.projectKey=${SONAR_PROJECT_KEY}               -Dsonar.sources=.               -Dsonar.python.version=3.x
+            ${SONAR_SCANNER_HOME}/opt/sonar-scanner-4.6.2.2472-linux/bin/sonar-scanner -Dsonar.projectKey=cmu-capstone -Dsonar.sources=. -Dsonar.python.version=3.x
+               -Dsonar.projectKey=${SONAR_PROJECT_KEY}               -Dsonar.sources=.               -Dsonar.python.version=3.x
           '''
         }
 
