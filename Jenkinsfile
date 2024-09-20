@@ -1,12 +1,5 @@
 pipeline {
-  //agent any
-
-agent {
-    docker {
-      image 'docker:latest'
-      args '-v /var/run/docker.sock:/var/run/docker.sock'
-    }
-  }
+  agent any
 
   stages {
     stage('Checkout') {
@@ -27,7 +20,6 @@ agent {
     }
 
 
-/**
     stage('SonarQube Analysis') {
       steps {
         withSonarQubeEnv('MySonarQube') {
@@ -71,15 +63,14 @@ agent {
         '''
       }
     }
-**/
-    stage('Test Docker Login') {
-    steps {
-        sh '''
-            echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
-        '''
-    }
-}
 
+//    stage('Test Docker Login') {
+//    steps {
+//        sh '''
+//            echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
+//        '''
+//    }
+//}
 
     stage('Build Docker Image') {
       steps{
@@ -90,14 +81,14 @@ agent {
       }
     }
 
-    stage('Test Kubernetes Access') {
-      steps {
-        sh '''
-            export KUBECONFIG=$KUBE_CONFIG
-            kubectl get nodes
-        '''
-      }
-    }
+//    stage('Test Kubernetes Access') {
+//      steps {
+//        sh '''
+//            export KUBECONFIG=$KUBE_CONFIG
+//            kubectl get nodes
+//        '''
+//      }
+//    }
 
 
 
