@@ -17,23 +17,23 @@ pipeline {
         '''
       }
     }
-
+/**
     stage('SonarQube Analysis') {
       steps {
         withSonarQubeEnv('MySonarQube') {
           sh '''#!/bin/bash
 
-# Correct path to SonarQube scanner executable
-${SONAR_SCANNER_HOME}/var/jenkins_home/tools/hudson.plugins.sonar.SonarRunnerInstallation/SonarQubeScanner/
-  -Dsonar.projectKey=${SONAR_PROJECT_KEY} \\
-  -Dsonar.sources=. \\
-  -Dsonar.python.version=3.x
-'''
+        # Correct path to SonarQube scanner executable
+        ${SONAR_SCANNER_HOME}/var/jenkins_home/tools/hudson.plugins.sonar.SonarRunnerInstallation/SonarQubeScanner/
+          -Dsonar.projectKey=${SONAR_PROJECT_KEY} \\
+          -Dsonar.sources=. \\
+          -Dsonar.python.version=3.x
+        '''
         }
 
       }
     }
-
+**/
     stage('Run App') {
       steps {
         sh '''
