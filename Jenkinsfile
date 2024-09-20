@@ -33,7 +33,7 @@ pipeline {
 
       }
     }
-**/
+
     stage('Run App') {
       steps {
         sh '''
@@ -43,7 +43,7 @@ pipeline {
         '''
       }
     }
-
+**/
     stage('SBOM with Syft') {
       steps {
         sh '''
