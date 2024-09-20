@@ -62,11 +62,50 @@ ${SONAR_SCANNER_HOME}/var/jenkins_home/tools/hudson.plugins.sonar.SonarRunnerIns
       }
     }
 
+    stage('Build Docker Image') {
+      steps{
+        sh '''
+          #!/bin/bash
+          docker build -t myapp:${BUILD_NUMBER} .
+          '''
+      }
+    }
+
+    stage('Push Docker Image to Container Registry'){
+      environment{
+        DOCKER_REGISTRY = 'my-docker-registry'
+        DOCKER_IMAGE = '${DOCKER_REGISTRY}/myapp:${BUILD_NUMBER}'
+      }
+      steps{
+        sh '''
+          #!/bin/bash
+          echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
+          docker tag myapp:${BUILD_NUMBER} ${DOCKER_IMAGE}
+          docker push ${DOCKER_IMAGE}
+          '''
+      }
+    }
+
+    stage('Deploy to Kubernetes'){
+      environment{
+        KUBE_CONFIG = credentials('kubeconfig')
+      }
+      steps{
+        sh '''
+          #!/bin/bash
+          export KUBECONFIG=$KUBE_CONFIG
+          kubectl set image deployment/myapp-deployment myapp-container=${DOCKER_IMAGE} --record
+          '''
+      }
+    }
+
   }
   environment {
     SONAR_SERVER = 'MySonarQube'
     SONAR_PROJECT_KEY = 'cmu-capstone'
     SONAR_SCANNER_HOME = 'SonarQubeScanner'
+    DOCKER_USERNAME = credentials('docker-username')
+    DOCKER_PASSWORD = credentials('docker-password')
   }
   post {
     always {
