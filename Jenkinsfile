@@ -1,5 +1,13 @@
 pipeline {
-  agent any
+  //agent any
+
+agent {
+    docker {
+      image 'docker:latest'
+      args '-v /var/run/docker.sock:/var/run/docker.sock'
+    }
+  }
+
   stages {
     stage('Checkout') {
       steps {
@@ -18,15 +26,6 @@ pipeline {
       }
     }
 
-    stage('Install Docker') {
-      steps {
-        sh '''
-          #!/bin/bash
-          sudo apt update
-          sudo apt install -y docker.io
-        '''
-      }
-    }
 
 /**
     stage('SonarQube Analysis') {
