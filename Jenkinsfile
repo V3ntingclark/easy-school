@@ -43,7 +43,7 @@ pipeline {
         '''
       }
     }
-**/
+
     stage('SBOM with Syft') {
       steps {
         sh '''
@@ -61,7 +61,7 @@ pipeline {
         '''
       }
     }
-
+**/
     stage('Test Docker Login') {
     steps {
         sh '''
