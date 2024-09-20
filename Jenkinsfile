@@ -62,6 +62,15 @@ ${SONAR_SCANNER_HOME}/var/jenkins_home/tools/hudson.plugins.sonar.SonarRunnerIns
       }
     }
 
+    stage('Test Docker Login') {
+    steps {
+        sh '''
+            echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
+        '''
+    }
+}
+
+
     stage('Build Docker Image') {
       steps{
         sh '''
@@ -71,18 +80,27 @@ ${SONAR_SCANNER_HOME}/var/jenkins_home/tools/hudson.plugins.sonar.SonarRunnerIns
       }
     }
 
-    stage('Push Docker Image to Container Registry'){
-      environment{
-        DOCKER_REGISTRY = 'my-docker-registry'
-        DOCKER_IMAGE = '${DOCKER_REGISTRY}/myapp:${BUILD_NUMBER}'
-      }
-      steps{
+    stage('Test Kubernetes Access') {
+      steps {
         sh '''
-          #!/bin/bash
-          echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
-          docker tag myapp:${BUILD_NUMBER} ${DOCKER_IMAGE}
-          docker push ${DOCKER_IMAGE}
-          '''
+            export KUBECONFIG=$KUBE_CONFIG
+            kubectl get nodes
+        '''
+      }
+    }
+
+
+
+    stage('Push Docker Image to Container Registry'){
+      environment {
+        DOCKER_CREDENTIALS = credentials('docker-credentials')
+      }
+      steps {
+        sh '''
+          echo $DOCKER_CREDENTIALS_PSW | docker login -u $DOCKER_CREDENTIALS_USR --password-stdin
+          docker tag myapp:${BUILD_NUMBER} ${DOCKER_CREDENTIALS_USR}/myapp:${BUILD_NUMBER}
+          docker push ${DOCKER_CREDENTIALS_USR}/myapp:${BUILD_NUMBER}
+        '''
       }
     }
 
@@ -104,8 +122,7 @@ ${SONAR_SCANNER_HOME}/var/jenkins_home/tools/hudson.plugins.sonar.SonarRunnerIns
     SONAR_SERVER = 'MySonarQube'
     SONAR_PROJECT_KEY = 'cmu-capstone'
     SONAR_SCANNER_HOME = 'SonarQubeScanner'
-    DOCKER_USERNAME = credentials('docker-username')
-    DOCKER_PASSWORD = credentials('docker-password')
+    DOCKER_CREDENTIALS = credentials('docker-credentials')
   }
   post {
     always {
