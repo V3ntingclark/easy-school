@@ -17,6 +17,16 @@ pipeline {
         '''
       }
     }
+
+    stage('Install Docker') {
+      steps {
+        sh '''
+          sudo apt update
+          sudo apt install -y docker.io
+        '''
+      }
+    }
+
 /**
     stage('SonarQube Analysis') {
       steps {
