@@ -19,8 +19,10 @@ pipeline {
     }
 
     stage('SonarQube Analysis') {
-      steps {
-        sh '''
+      parallel {
+        stage('SonarQube Analysis') {
+          steps {
+            sh '''
 #!/bin/bash
 java -version
 sonar-scanner \\ 
@@ -29,47 +31,63 @@ sonar-scanner \\
   -Dsonar.host.url=http://18.118.11.97:9000 \\
   -Dsonar.token=sqp_0a5b77d7309822c8f096282430dc48c91ecfea3c
 '''
-      }
-    }
+          }
+        }
 
-    stage('Run App') {
-      steps {
-        sh '''
+        stage('Verify SQ Scanner') {
+          steps {
+            sh '''stage(\'Verify SonarQube Scanner\') {
+    steps {
+        sh \'\'\'
+        echo "PATH: $PATH"
+        sonar-scanner -v  # Check if sonar-scanner is available
+        \'\'\'
+    }
+}'''
+            }
+          }
+
+        }
+      }
+
+      stage('Run App') {
+        steps {
+          sh '''
           #!/bin/bash
           source venv/bin/activate  # Activate the virtual environment
           python3 app.py  # Run the Python app
         '''
+        }
       }
-    }
 
-    stage('SBOM with Syft') {
-      steps {
-        sh '''
+      stage('SBOM with Syft') {
+        steps {
+          sh '''
           #!/bin/bash
           docker run --rm -v $(pwd):/project anchore/syft:latest /project -o cyclonedx-json > sbom.json
         '''
+        }
       }
-    }
 
-    stage('Vulnerability Scan with Grype') {
-      steps {
-        sh '''
+      stage('Vulnerability Scan with Grype') {
+        steps {
+          sh '''
           #!/bin/bash
           docker run --rm -v $(pwd):/project anchore/grype:latest sbom:/project/sbom.json
         '''
+        }
       }
-    }
 
-  }
-  environment {
-    SONAR_SERVER = 'MySonarQube'
-    SONAR_PROJECT_KEY = 'cmu-capstone'
-    SONAR_SCANNER_HOME = 'SonarQubeScanner'
-  }
-  post {
-    always {
-      archiveArtifacts(artifacts: 'sbom.json', allowEmptyArchive: true)
     }
+    environment {
+      SONAR_SERVER = 'MySonarQube'
+      SONAR_PROJECT_KEY = 'cmu-capstone'
+      SONAR_SCANNER_HOME = 'SonarQubeScanner'
+    }
+    post {
+      always {
+        archiveArtifacts(artifacts: 'sbom.json', allowEmptyArchive: true)
+      }
 
+    }
   }
-}
