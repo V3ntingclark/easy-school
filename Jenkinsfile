@@ -19,10 +19,16 @@ pipeline {
     }
 
     stage('SonarQube Analysis') {
-      parallel {
-        stage('SonarQube Analysis') {
-          steps {
-            sh '''
+      steps {
+        sh '''stage(\'Verify SonarQube Scanner\') {
+    steps {
+        sh \'\'\'
+        echo "PATH: $PATH"
+        sonar-scanner -v  # Check if sonar-scanner is available
+        \'\'\'
+    }
+}'''
+          sh '''
 #!/bin/bash
 java -version
 sonar-scanner \\ 
@@ -31,22 +37,6 @@ sonar-scanner \\
   -Dsonar.host.url=http://18.118.11.97:9000 \\
   -Dsonar.token=sqp_0a5b77d7309822c8f096282430dc48c91ecfea3c
 '''
-          }
-        }
-
-        stage('Verify SQ Scanner') {
-          steps {
-            sh '''stage(\'Verify SonarQube Scanner\') {
-    steps {
-        sh \'\'\'
-        echo "PATH: $PATH"
-        sonar-scanner -v  # Check if sonar-scanner is available
-        \'\'\'
-    }
-}'''
-            }
-          }
-
         }
       }
 
