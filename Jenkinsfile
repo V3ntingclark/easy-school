@@ -18,15 +18,11 @@ pipeline {
       }
     }
 
-stage('SonarQube Analysis') {
-  steps {
-    withSonarQubeEnv('MySonarQube') {
-      sh '''#!/bin/bash
-      /var/lib/docker/overlay2/9c320fa8dfa4f04ed65a8998b94fa5a65714c7f8584b5e2ad4e8a36dcfabc3c6/merged/opt/sonar-scanner-4.6.2.2472-linux/bin/sonar-scanner \
-        -Dsonar.projectKey=cmu-capstone \
-        -Dsonar.sources=. \
-        -Dsonar.python.version=3.x \
-        -Dsonar.login=sqa_0cd94b0d8af364f302a0e8406809bfe482662f72
+    stage('SonarQube Analysis') {
+      steps {
+        withSonarQubeEnv('MySonarQube') {
+          sh '''#!/bin/bash
+      /var/lib/docker/overlay2/9c320fa8dfa4f04ed65a8998b94fa5a65714c7f8584b5e2ad4e8a36dcfabc3c6/merged/opt/sonar-scanner-4.6.2.2472-linux/bin/sonar-scanner         -Dsonar.projectKey=cmu-capstone         -Dsonar.sources=.         -Dsonar.python.version=3.x         -Dsonar.login=sqa_0cd94b0d8af364f302a0e8406809bfe482662f72
       '''
         }
 
