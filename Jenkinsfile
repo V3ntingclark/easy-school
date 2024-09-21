@@ -25,9 +25,10 @@ pipeline {
 
 # Correct path to SonarQube scanner executable
 ${SONAR_SCANNER_HOME}/var/jenkins_home/tools/hudson.plugins.sonar.SonarRunnerInstallation/SonarQubeScanner/
-  -Dsonar.projectKey=${SONAR_PROJECT_KEY} \\
+  -Dsonar.projectKey=cmu-capstone \\
   -Dsonar.sources=. \\
   -Dsonar.python.version=3.x
+  -Dsonar.login= sqa_0cd94b0d8af364f302a0e8406809bfe482662f72
 '''
         }
 
