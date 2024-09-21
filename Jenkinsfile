@@ -17,6 +17,14 @@ pipeline {
         '''
       }
     }
+    stage('Verify SonarQube Scanner') {
+    steps {
+        sh '''#!/bin/bash
+        echo "PATH: $PATH"
+        sonar-scanner -v  # Check if sonar-scanner is available
+        '''
+    }
+}
 
     stage('SonarQube Analysis') {
       steps {
