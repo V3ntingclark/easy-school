@@ -22,7 +22,7 @@ pipeline {
       steps {
         withSonarQubeEnv('MySonarQube') {
           sh '''#!/bin/bash
-      /opt/sonar-scanner-4.6.2.2472-linux/bin/sonar-scanner         -Dsonar.projectKey=cmu-capstone         -Dsonar.sources=.         -Dsonar.python.version=3.x         -Dsonar.login=sqa_0cd94b0d8af364f302a0e8406809bfe482662f72
+      /opt/sonar-scanner-6.1.0.4477-linux/bin/sonar-scanner         -Dsonar.projectKey=cmu-capstone         -Dsonar.sources=.         -Dsonar.python.version=3.x         -Dsonar.login=sqa_0cd94b0d8af364f302a0e8406809bfe482662f72
       '''
         }
 
