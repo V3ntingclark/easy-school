@@ -21,7 +21,10 @@ pipeline {
     stage('SonarQube Analysis') {
       steps {
         sh '''#!/bin/bash
-      /opt/sonar-scanner-4.6.2.2472-linux/bin/sonar-scanner -Dsonar.projectKey=cmu-capstone -Dsonar.sources=. -Dsonar.python.version=3.x -Dsonar.login=sqa_0cd94b0d8af364f302a0e8406809bfe482662f72
+      /opt/sonar-scanner-4.6.2.2472-linux/bin/sonar-scanner -Dsonar.projectKey=cmu-capstone \\
+  -Dsonar.sources=. \\
+  -Dsonar.host.url=http://18.118.11.97:9000 \\
+  -Dsonar.token=sqp_0a5b77d7309822c8f096282430dc48c91ecfea3c
 '''
       }
     }
