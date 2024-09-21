@@ -1,5 +1,10 @@
 pipeline {
   agent any
+  environment {
+    SONAR_SERVER = 'MySonarQube'
+    SONAR_PROJECT_KEY = 'cmu-capstone'
+    SONAR_TOKEN = credentials('your-sonarqube-token-id') // Use Jenkins credentials
+  }
   stages {
     stage('Checkout') {
       steps {
@@ -10,39 +15,39 @@ pipeline {
     stage('Set Up Python') {
       steps {
         sh '''
-          #!/bin/bash
           python3 -m venv venv  # Create virtual environment
           . venv/bin/activate  # Activate the virtual environment
           pip install -r requirements.txt  # Install dependencies
         '''
       }
     }
+
     stage('Verify SonarQube Scanner') {
-    steps {
-        sh '''#!/bin/bash
+      steps {
+        sh '''
         echo "PATH: $PATH"
         sonar-scanner -v  # Check if sonar-scanner is available
         '''
+      }
     }
-}
 
-stage('SonarQube Analysis') {
-  steps {
-    withSonarQubeEnv('MySonarQube') {
-      sh '''
-      sonar-scanner \
-        -Dsonar.projectKey=cmu-capstone \
-        -Dsonar.sources=. \
-        -Dsonar.host.url=http://18.118.11.97:9000 \
-        -Dsonar.login=sqp_71da05a49a08673899dba24f9c46b120cb904b2c
-      '''
+    stage('SonarQube Analysis') {
+      steps {
+        withSonarQubeEnv('MySonarQube') {
+          sh '''
+          sonar-scanner \
+            -Dsonar.projectKey=cmu-capstone \
+            -Dsonar.sources=. \
+            -Dsonar.host.url=http://18.118.11.97:9000 \
+            -Dsonar.login=sqp_71da05a49a08673899dba24f9c46b120cb904b2c
+          '''
+        }
       }
     }
 
     stage('Run App') {
       steps {
         sh '''
-          #!/bin/bash
           source venv/bin/activate  # Activate the virtual environment
           python3 app.py  # Run the Python app
         '''
@@ -52,7 +57,6 @@ stage('SonarQube Analysis') {
     stage('SBOM with Syft') {
       steps {
         sh '''
-          #!/bin/bash
           docker run --rm -v $(pwd):/project anchore/syft:latest /project -o cyclonedx-json > sbom.json
         '''
       }
@@ -61,23 +65,14 @@ stage('SonarQube Analysis') {
     stage('Vulnerability Scan with Grype') {
       steps {
         sh '''
-          #!/bin/bash
           docker run --rm -v $(pwd):/project anchore/grype:latest sbom:/project/sbom.json
         '''
       }
     }
-
-  }
-  environment {
-    SONAR_SERVER = 'MySonarQube'
-    SONAR_PROJECT_KEY = 'cmu-capstone'
-    SONAR_SCANNER_HOME = 'SonarQubeScanner'
   }
   post {
     always {
       archiveArtifacts(artifacts: 'sbom.json', allowEmptyArchive: true)
     }
-
   }
-}
 }
