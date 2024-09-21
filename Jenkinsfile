@@ -23,7 +23,8 @@ pipeline {
         sh '''
 #!/bin/bash
 java -version
-      /opt/sonar-scanner-4.6.2.2472-linux/bin/sonar-scanner -Dsonar.projectKey=cmu-capstone \\
+sonar-scanner \\ 
+  -Dsonar.projectKey=cmu-capstone \\
   -Dsonar.sources=. \\
   -Dsonar.host.url=http://18.118.11.97:9000 \\
   -Dsonar.token=sqp_0a5b77d7309822c8f096282430dc48c91ecfea3c
