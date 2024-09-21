@@ -26,17 +26,16 @@ pipeline {
     }
 }
 
-    stage('SonarQube Analysis') {
-      steps {
-        sh '''
-#!/bin/bash
-java -version
-sonar-scanner \\ 
-  -Dsonar.projectKey=cmu-capstone \\
-  -Dsonar.sources=. \\
-  -Dsonar.host.url=http://18.118.11.97:9000 \\
-  -Dsonar.token=sqp_0a5b77d7309822c8f096282430dc48c91ecfea3c
-'''
+stage('SonarQube Analysis') {
+  steps {
+    withSonarQubeEnv('MySonarQube') {
+      sh '''
+      sonar-scanner \
+        -Dsonar.projectKey=cmu-capstone \
+        -Dsonar.sources=. \
+        -Dsonar.host.url=http://18.118.11.97:9000 \
+        -Dsonar.login=sqp_71da05a49a08673899dba24f9c46b120cb904b2c
+      '''
       }
     }
 
