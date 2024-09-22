@@ -30,7 +30,6 @@ CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
 # Jenkins image to enable Docker commands
 FROM jenkins/jenkins:lts
 
-USER root  # Switch to root user
 
 # Install Docker
 RUN apt-get update && \
