@@ -1,5 +1,5 @@
 # Base image for Python application
-FROM python:3.6-slim AS app
+FROM python:3.9-slim AS app
 
 # Set environment variables for Python
 ENV PYTHONDONTWRITEBYTECODE=1
