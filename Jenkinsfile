@@ -21,7 +21,7 @@ pipeline {
       steps {
         sh '''
                 echo "PATH: $PATH"
-                which fuckthis || echo "sonar-scanner not found in PATH"  # Check path
+                which sonar-scanner || echo "sonar-scanner not found in PATH"  # Check path
                 sonar-scanner -v  # Check if sonar-scanner is available
                 '''
       }
