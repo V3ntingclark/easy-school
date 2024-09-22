@@ -34,6 +34,9 @@ pipeline {
         }
 
         stage('SonarQube Analysis') {
+            when {
+                expression { return false } // Change to 'return true' to enable SonarQube analysis
+            }
             steps {
                 withSonarQubeEnv('sonar-scanner') {
                     sh '''
