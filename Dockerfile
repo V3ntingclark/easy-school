@@ -1,48 +1,35 @@
-# Base image for Python application
+# Start from a base image
 FROM python:3.9-slim AS app
 
-# Set environment variables for Python
+# Set environment variables
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
-# Create and set a working directory
+# Set the working directory
 WORKDIR /app
 
-# Copy only the requirements file first for better caching
+# Copy the requirements file
 COPY requirements.txt /app/
 
 # Install dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the rest of your application code
+# Copy the rest of the application code
 COPY . /app/
 
-# Run database migrations
-RUN python manage.py makemigrations
-RUN python manage.py migrate
-
-# Expose the port number
-EXPOSE 8000
-
-# Command to run the application
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
-
-# Jenkins image to enable Docker commands
+# Switch to a Jenkins base image
 FROM jenkins/jenkins:lts
 
+# Switch to root user before installing packages
+USER root
 
 # Install Docker
 RUN apt-get update && \
     apt-get install -y docker.io && \
     apt-get clean
 
-USER jenkins  # Switch back to the jenkins user
+# Switch back to the Jenkins user
+USER jenkins
 
-# Copy the built application from the previous stage
-COPY --from=app /app /app
-
-# Set the working directory
-WORKDIR /app
-
-# Command to run Jenkins
-CMD ["jenkins"]
+# Set the command to run the application
+CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
