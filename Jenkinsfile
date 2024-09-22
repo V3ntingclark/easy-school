@@ -1,11 +1,5 @@
 pipeline {
   agent any
-  environment {
-    SONAR_SERVER = 'MySonarQube'
-    SONAR_PROJECT_KEY = 'cmu-capstone'
-    SONAR_TOKEN = credentials('your-sonarqube-token-id') // Use Jenkins credentials
-    APP_IMAGE = 'my-app:latest'  // Name of your application Docker image
-  }
   stages {
     stage('Checkout') {
       steps {
@@ -36,13 +30,10 @@ pipeline {
       steps {
         withSonarQubeEnv('MySonarQube') {
           sh '''
-          sonar-scanner \
-            -Dsonar.projectKey=cmu-capstone \
-            -Dsonar.sources=. \
-            -Dsonar.host.url=http://18.118.11.97:9000 \
-            -Dsonar.login=sqp_71da05a49a08673899dba24f9c46b120cb904b2c
+          sonar-scanner             -Dsonar.projectKey=cmu-capstone             -Dsonar.sources=.             -Dsonar.host.url=http://18.118.11.97:9000             -Dsonar.login=sqp_71da05a49a08673899dba24f9c46b120cb904b2c
           '''
         }
+
       }
     }
 
@@ -50,9 +41,10 @@ pipeline {
       steps {
         script {
           sh '''
-          docker build -t $APP_IMAGE .  # Build Docker image
-          '''
+docker build -t $APP_IMAGE .  # Build Docker image
+'''
         }
+
       }
     }
 
@@ -79,11 +71,17 @@ pipeline {
         '''
       }
     }
+
   }
-  
+  environment {
+    SONAR_SERVER = 'MySonarQube'
+    SONAR_PROJECT_KEY = 'cmu-capstone'
+    APP_IMAGE = 'my-app:latest'
+  }
   post {
     always {
       archiveArtifacts(artifacts: 'sbom.json', allowEmptyArchive: true)
     }
+
   }
 }
