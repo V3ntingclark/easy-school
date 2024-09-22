@@ -28,7 +28,7 @@ pipeline {
 
     stage('SonarQube Analysis') {
       steps {
-        withSonarQubeEnv('MySonarQube') {
+        withSonarQubeEnv('sonar-scanner') {
           sh '''
           sonar-scanner             -Dsonar.projectKey=cmu-capstone             -Dsonar.sources=.             -Dsonar.host.url=http://18.118.11.97:9000             -Dsonar.login=sqp_71da05a49a08673899dba24f9c46b120cb904b2c
           '''
