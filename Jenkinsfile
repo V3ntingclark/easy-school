@@ -4,6 +4,7 @@ pipeline {
     SONAR_SERVER = 'MySonarQube'
     SONAR_PROJECT_KEY = 'cmu-capstone'
     SONAR_TOKEN = credentials('your-sonarqube-token-id') // Use Jenkins credentials
+    APP_IMAGE = 'my-app:latest'  // Name of your application Docker image
   }
   stages {
     stage('Checkout') {
@@ -45,11 +46,20 @@ pipeline {
       }
     }
 
+    stage('Build Docker Image') {
+      steps {
+        script {
+          sh '''
+          docker build -t $APP_IMAGE .  # Build Docker image
+          '''
+        }
+      }
+    }
+
     stage('Run App') {
       steps {
         sh '''
-          source venv/bin/activate  # Activate the virtual environment
-          python3 app.py  # Run the Python app
+          docker run -d -p 8000:8000 $APP_IMAGE  # Run the application in a container
         '''
       }
     }
@@ -70,6 +80,7 @@ pipeline {
       }
     }
   }
+  
   post {
     always {
       archiveArtifacts(artifacts: 'sbom.json', allowEmptyArchive: true)
