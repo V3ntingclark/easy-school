@@ -1,5 +1,12 @@
 pipeline {
   agent any
+  environment {
+    SONAR_SERVER = 'Remote SonarQube'  // SonarQube configuration in Jenkins
+    SONAR_PROJECT_KEY = 'cmu-capstone'
+    APP_IMAGE = 'my-app:latest'
+    SONAR_SCANNER_PATH = '/opt/sonar-scanner-4.6.2.2472-linux/bin'
+    PATH = "${SONAR_SCANNER_PATH}:${PATH}"  // Ensure sonar-scanner is in the PATH
+  }
   stages {
     stage('Checkout') {
       steps {
@@ -10,41 +17,34 @@ pipeline {
     stage('Set Up Python') {
       steps {
         sh '''
-                    python3 -m venv venv  # Create virtual environment
-                    . venv/bin/activate  # Activate the virtual environment
-                    pip install -r requirements.txt  # Install dependencies
-                '''
+          python3 -m venv venv  # Create virtual environment
+          . venv/bin/activate  # Activate the virtual environment
+          pip install -r requirements.txt  # Install dependencies
+        '''
       }
     }
 
     stage('Verify SonarQube Scanner') {
       steps {
         sh '''
-                echo "PATH: $PATH"
-                which sonar-scanner || echo "sonar-scanner not found in PATH"  # Check path
-                sonar-scanner -v  # Check if sonar-scanner is available
-                '''
+          echo "PATH: $PATH"
+          which sonar-scanner || echo "sonar-scanner not found in PATH"  # Check sonar-scanner in PATH
+          sonar-scanner -v  # Verify sonar-scanner installation
+        '''
       }
     }
 
     stage('SonarQube Analysis') {
       steps {
-        script {
-          try {
-            withSonarQubeEnv('sonar-scanner') {
-              sh '''
-sonar-scanner \
--Dsonar.projectKey=${SONAR_PROJECT_KEY} \
--Dsonar.sources=. \
--Dsonar.host.url=http://18.118.11.97:9000 \
--Dsonar.login=sqp_71da05a49a08673899dba24f9c46b120cb904b2c
-'''
-            }
-          } catch (Exception e) {
-            echo "SonarQube analysis failed, continuing with the pipeline: ${e}"
-          }
+        withSonarQubeEnv('Remote SonarQube') {  // Matches the SonarQube server config
+          sh '''
+            sonar-scanner \
+              -Dsonar.projectKey=${SONAR_PROJECT_KEY} \
+              -Dsonar.sources=. \
+              -Dsonar.host.url=http://18.118.11.97:9000 \
+              -Dsonar.login=sqp_71da05a49a08673899dba24f9c46b120cb904b2c
+          '''
         }
-
       }
     }
 
@@ -52,49 +52,40 @@ sonar-scanner \
       steps {
         script {
           sh '''
-docker build -t $APP_IMAGE .  # Build Docker image
-'''
+            docker build -t $APP_IMAGE .  # Build Docker image
+          '''
         }
-
       }
     }
 
     stage('Run App') {
       steps {
         sh '''
-                docker run -d -p 8000:8000 $APP_IMAGE  # Run the application in a container
-                '''
+          docker run -d -p 8000:8000 $APP_IMAGE  # Run the application in a container
+        '''
       }
     }
 
     stage('SBOM with Syft') {
       steps {
         sh '''
-                docker run --rm -v $(pwd):/project anchore/syft:latest /project -o cyclonedx-json > sbom.json
-                '''
+          docker run --rm -v $(pwd):/project anchore/syft:latest /project -o cyclonedx-json > sbom.json  # Generate SBOM
+        '''
       }
     }
 
     stage('Vulnerability Scan with Grype') {
       steps {
         sh '''
-                docker run --rm -v $(pwd):/project anchore/grype:latest sbom:/project/sbom.json
-                '''
+          docker run --rm -v $(pwd):/project anchore/grype:latest sbom:/project/sbom.json  # Scan SBOM for vulnerabilities
+        '''
       }
     }
+  }
 
-  }
-  environment {
-    SONAR_SERVER = 'MySonarQube'
-    SONAR_PROJECT_KEY = 'cmu-capstone'
-    APP_IMAGE = 'my-app:latest'
-    SONAR_SCANNER_PATH = '/opt/sonar-scanner-4.6.2.2472-linux/bin'
-    PATH = "${SONAR_SCANNER_PATH}:${PATH}" // Add sonar-scanner to the PATH
-  }
   post {
     always {
-      archiveArtifacts(artifacts: 'sbom.json', allowEmptyArchive: true)
+      archiveArtifacts(artifacts: 'sbom.json', allowEmptyArchive: true)  // Archive SBOM regardless of the outcome
     }
-
   }
 }
