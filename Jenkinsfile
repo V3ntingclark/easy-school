@@ -4,7 +4,8 @@ pipeline {
         SONAR_SERVER = 'MySonarQube'
         SONAR_PROJECT_KEY = 'cmu-capstone'
         APP_IMAGE = 'my-app:latest'
-        PATH = "/opt/sonar-scanner/bin:$PATH" // Ensure sonar-scanner is in the PATH
+        SONAR_SCANNER_PATH = '/opt/sonar-scanner-4.6.2.2472-linux/bin' // Updated path
+        PATH = "${SONAR_SCANNER_PATH}:${PATH}" // Add sonar-scanner to the PATH
     }
     stages {
         stage('Checkout') {
