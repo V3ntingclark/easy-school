@@ -90,14 +90,14 @@ pipeline {
 //    }
 //}
 
-    stage('Build Docker Image') {
-      steps{
-        sh '''
-          #!/bin/bash
-          docker build -t myapp:${BUILD_NUMBER} .
-          '''
-      }
-    }
+//    stage('Build Docker Image') {
+//      steps{
+//        sh '''
+//          #!/bin/bash
+//          docker build -t myapp:${BUILD_NUMBER} .
+//          '''
+//      }
+//    }
 
 //    stage('Test Kubernetes Access') {
 //      steps {
