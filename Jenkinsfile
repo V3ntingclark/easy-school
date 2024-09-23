@@ -91,19 +91,6 @@ pipeline {
       }
     }
 
-
-    stage('Test Kubernetes Access') {
-      steps {
-        sh '''
-            #!/bin/bash
-            export KUBECONFIG=$KUBE_CONFIG
-            kubectl get nodes
-        '''
-      }
-    }
-
-
-
     stage('Push Docker Image to Container Registry'){
       environment {
         DOCKER_CREDENTIALS = credentials('docker-credentials')
