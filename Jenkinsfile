@@ -95,6 +95,7 @@ pipeline {
     stage('Test Kubernetes Access') {
       steps {
         sh '''
+            #!/bin/bash
             export KUBECONFIG=$KUBE_CONFIG
             kubectl get nodes
         '''
