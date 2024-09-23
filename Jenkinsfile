@@ -3,7 +3,7 @@ pipeline {
   environment {
     SONAR_SERVER = 'Remote SonarQube'  // SonarQube configuration in Jenkins
     SONAR_PROJECT_KEY = 'cmu-capstone'
-    APP_IMAGE = 'my-app:latest'
+    APP_IMAGE = 'eseantatum/myapp'
     SONAR_SCANNER_PATH = '/opt/sonar-scanner-4.6.2.2472-linux/bin'
     PATH = "${SONAR_SCANNER_PATH}:${PATH}"  // Ensure sonar-scanner is in the PATH
   }
@@ -58,11 +58,11 @@ pipeline {
 //      }
 //    }
 
-        stage('Build Docker Image') {
+    stage('Build Docker Image') {
       steps{
         sh '''
           #!/bin/bash
-          docker build -t myapp:${BUILD_NUMBER} .
+          docker build -t $APP_IMAGE:${BUILD_NUMBER} .
           '''
       }
     }
@@ -70,7 +70,7 @@ pipeline {
     stage('Run App') {
       steps {
         sh '''
-          docker run -d -p 8000:8000 $APP_IMAGE  # Run the application in a container
+          docker run -d -p 8000:8000 $APP_IMAGE:${BUILD_NUMBER}  # Run the application in a container
         '''
       }
     }
@@ -91,23 +91,23 @@ pipeline {
       }
     }
 
-    //    stage('Test Docker Login') {
-//    steps {
-//        sh '''
-//            echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
-//        '''
-//    }
-//}
+    stage('Test Docker Login') {
+    steps {
+        sh '''
+            echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
+        '''
+    }
+}
 
 
-//    stage('Test Kubernetes Access') {
-//      steps {
-//        sh '''
-//            export KUBECONFIG=$KUBE_CONFIG
-//            kubectl get nodes
-//        '''
-//      }
-//    }
+    stage('Test Kubernetes Access') {
+      steps {
+        sh '''
+            export KUBECONFIG=$KUBE_CONFIG
+            kubectl get nodes
+        '''
+      }
+    }
 
 
 
@@ -118,8 +118,8 @@ pipeline {
       steps {
         sh '''
           echo $DOCKER_CREDENTIALS_PSW | docker login -u $DOCKER_CREDENTIALS_USR --password-stdin
-          docker tag myapp:${BUILD_NUMBER} eseantatum/myapp:${BUILD_NUMBER}
-          docker push eseantatum/myapp:${BUILD_NUMBER}
+          docker tag myapp:${BUILD_NUMBER} $APP_IMAGE:${BUILD_NUMBER}
+          docker push $APP_IMAGE:${BUILD_NUMBER}
         '''
       }
     }
@@ -132,7 +132,7 @@ pipeline {
         sh '''
           #!/bin/bash
           export KUBECONFIG=$KUBE_CONFIG
-          kubectl set image deployment/myapp-deployment myapp-container=eseantatum/myapp:${BUILD_NUMBER} --record
+          kubectl set image deployment/myapp-deployment myapp-container=$APP_IMAGE:${BUILD_NUMBER} --record
           '''
       }
     }
