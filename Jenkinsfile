@@ -48,13 +48,22 @@ pipeline {
 //      }
 //    }
 
-    stage('Build Docker Image') {
-      steps {
-        script {
-          sh '''
-            docker build -t $APP_IMAGE .  # Build Docker image
+//    stage('Build Docker Image') {
+//      steps {
+//        script {
+//          sh '''
+//            docker build -t $APP_IMAGE .  # Build Docker image
+//          '''
+//        }
+//      }
+//    }
+
+        stage('Build Docker Image') {
+      steps{
+        sh '''
+          #!/bin/bash
+          docker build -t myapp:${BUILD_NUMBER} .
           '''
-        }
       }
     }
 
@@ -90,14 +99,6 @@ pipeline {
 //    }
 //}
 
-//    stage('Build Docker Image') {
-//      steps{
-//        sh '''
-//          #!/bin/bash
-//          docker build -t myapp:${BUILD_NUMBER} .
-//          '''
-//      }
-//    }
 
 //    stage('Test Kubernetes Access') {
 //      steps {
