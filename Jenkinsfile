@@ -91,14 +91,6 @@ pipeline {
       }
     }
 
-    stage('Test Docker Login') {
-    steps {
-        sh '''
-            echo $DOCKER_CREDENTIALS_PSW | docker login -u $DOCKER_CREDENTIALS_USR --password-stdin
-        '''
-    }
-}
-
 
     stage('Test Kubernetes Access') {
       steps {
