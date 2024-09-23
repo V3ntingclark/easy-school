@@ -94,7 +94,7 @@ pipeline {
     stage('Test Docker Login') {
     steps {
         sh '''
-            echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
+            echo $DOCKER_CREDENTIALS_PSW | docker login -u $DOCKER_CREDENTIALS_USR --password-stdin
         '''
     }
 }
