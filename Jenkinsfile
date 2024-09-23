@@ -117,7 +117,7 @@ pipeline {
       steps {
         sh '''
           echo $DOCKER_CREDENTIALS_PSW | docker login -u $DOCKER_CREDENTIALS_USR --password-stdin
-          docker tag myapp:${BUILD_NUMBER} ${DOCKER_CREDENTIALS_USR}/myapp:${BUILD_NUMBER}
+          docker tag myapp:${BUILD_NUMBER} eseantatum/myapp:${BUILD_NUMBER}
           docker push ${DOCKER_CREDENTIALS_USR}/myapp:${BUILD_NUMBER}
         '''
       }
