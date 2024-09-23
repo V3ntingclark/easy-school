@@ -81,7 +81,63 @@ pipeline {
         '''
       }
     }
+
+    //    stage('Test Docker Login') {
+//    steps {
+//        sh '''
+//            echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
+//        '''
+//    }
+//}
+
+    stage('Build Docker Image') {
+      steps{
+        sh '''
+          #!/bin/bash
+          docker build -t myapp:${BUILD_NUMBER} .
+          '''
+      }
+    }
+
+//    stage('Test Kubernetes Access') {
+//      steps {
+//        sh '''
+//            export KUBECONFIG=$KUBE_CONFIG
+//            kubectl get nodes
+//        '''
+//      }
+//    }
+
+
+
+    stage('Push Docker Image to Container Registry'){
+      environment {
+        DOCKER_CREDENTIALS = credentials('docker-credentials')
+      }
+      steps {
+        sh '''
+          echo $DOCKER_CREDENTIALS_PSW | docker login -u $DOCKER_CREDENTIALS_USR --password-stdin
+          docker tag myapp:${BUILD_NUMBER} ${DOCKER_CREDENTIALS_USR}/myapp:${BUILD_NUMBER}
+          docker push ${DOCKER_CREDENTIALS_USR}/myapp:${BUILD_NUMBER}
+        '''
+      }
+    }
+
+    stage('Deploy to Kubernetes'){
+      environment{
+        KUBE_CONFIG = credentials('kubeconfig')
+      }
+      steps{
+        sh '''
+          #!/bin/bash
+          export KUBECONFIG=$KUBE_CONFIG
+          kubectl set image deployment/myapp-deployment myapp-container=${DOCKER_IMAGE} --record
+          '''
+      }
+    }
   }
+
+  
 
   post {
     always {
