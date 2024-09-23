@@ -34,19 +34,19 @@ pipeline {
       }
     }
 
-    stage('SonarQube Analysis') {
-      steps {
-        withSonarQubeEnv('Remote SonarQube') {  // Matches the SonarQube server config
-          sh '''
-            sonar-scanner \
-              -Dsonar.projectKey=${SONAR_PROJECT_KEY} \
-              -Dsonar.sources=. \
-              -Dsonar.host.url=http://18.118.11.97:9000 \
-              -Dsonar.login=sqp_71da05a49a08673899dba24f9c46b120cb904b2c
-          '''
-        }
-      }
-    }
+//    stage('SonarQube Analysis') {
+//      steps {
+//        withSonarQubeEnv('Remote SonarQube') {  // Matches the SonarQube server config
+//          sh '''
+//            sonar-scanner \
+//              -Dsonar.projectKey=${SONAR_PROJECT_KEY} \
+//              -Dsonar.sources=. \
+//              -Dsonar.host.url=http://18.118.11.97:9000 \
+//              -Dsonar.login=sqp_71da05a49a08673899dba24f9c46b120cb904b2c
+//          '''
+//        }
+//      }
+//    }
 
     stage('Build Docker Image') {
       steps {
