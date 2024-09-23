@@ -132,7 +132,7 @@ pipeline {
         sh '''
           #!/bin/bash
           export KUBECONFIG=$KUBE_CONFIG
-          kubectl set image deployment/myapp-deployment myapp-container=${DOCKER_IMAGE} --record
+          kubectl set image deployment/myapp-deployment myapp-container=eseantatum/myapp:${BUILD_NUMBER} --record
           '''
       }
     }
