@@ -17,19 +17,10 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy the rest of the application code
 COPY . /app/
 
-# Switch to a Jenkins base image
-FROM jenkins/jenkins:lts
-
-# Switch to root user before installing packages
-USER root
-
 # Install Docker
 RUN apt-get update && \
     apt-get install -y docker.io && \
     apt-get clean
-
-# Switch back to the Jenkins user
-USER jenkins
 
 # Set the command to run the application
 CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
