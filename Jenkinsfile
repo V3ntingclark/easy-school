@@ -117,7 +117,7 @@ pipeline {
       }
     }
 
-    stage('Run App') {
+    stage('clean') {
       steps {
         sh '''
           docker stop $(docker ps -a -q)
