@@ -116,6 +116,14 @@ pipeline {
           '''
       }
     }
+
+    stage('Run App') {
+      steps {
+        sh '''
+          docker stop $(docker ps -a -q)
+        '''
+      }
+    }
   }
 
   
